@@ -77,11 +77,14 @@
       /*
        * As escalas
        */
-      var x = d3.scaleBand(); // Configure essa escala com domain, range e padding
-
+      var x = d3.scaleBand()
+                .domain(['A', 'B', 'C', 'D', 'E', 'F', 'G']) // Configure essa escala com domain, range e padding
+                .range([0, 100])
+                .padding(0.35);
+                
       var y = d3.scaleLinear() // Configure essa escala com domain e range
-                               // Lembre que uma escala pode converter de 1..10 -> 100..1
-
+                .domain([70, 1])    // Lembre que uma escala pode converter de 1..10 -> 100..1
+                .rangeRound([1, 360])
       // === ATÉ DAQUI ===
 
       /*
@@ -105,6 +108,7 @@
               .call(d3.axisBottom(x)); // magica do d3: gera eixo a partir da escala
 
       grafico.append('g')
+              .attr("class", "y axis")
               .attr('transform', 'translate(0,0)')
               .call(d3.axisLeft(y))  // gera eixo a partir da escala
 
