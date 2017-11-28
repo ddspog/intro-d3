@@ -36,10 +36,72 @@
     "use strict"
 
     function desenhaBarras(dados) {
-      // Preencha aqui.
+      var alturaSVG = 400,
+        larguraSVG = 900;
+      var margin = {
+          top: 10,
+          right: 20,
+          bottom: 30,
+          left: 45
+        }, // para descolar a vis das bordas do grafico
+        larguraVis = larguraSVG - margin.left - margin.right,
+        alturaVis = alturaSVG - margin.top - margin.bottom;
+
+      /*
+       * Prepara onde adicionaremos a visualizacao
+       */
+      var grafico = d3.select('#chart') // cria elemento <svg> com um <g> dentro
+        .append('svg')
+        .attr('width', larguraVis + margin.left + margin.right)
+        .attr('height', alturaVis + margin.top + margin.bottom)
+        .append('g') // para entender o <g> vá em x03-detalhes-svg.html
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      // === EDITE DAQUI ===
+      /*
+       * As escalas
+       */
+      var x = d3.scaleBand()
+        .domain("ABDCEFGHIJKLMNOPQRSTUVWXYZ".split("")) // Configure essa escala com domain, range e padding
+        .range([0, 700])
+        .padding(0.35);
+
+      var y = d3.scaleLinear() // Configure essa escala com domain e range
+        .domain([.14, 0]) // Lembre que uma escala pode converter de 1..10 -> 100..1
+        .rangeRound([0, 360])
+      // === ATÉ DAQUI ===
+
+      /*
+       * As marcas
+       */
+      grafico.selectAll('g')
+        .data(dados)
+        .enter()
+        .append('rect')
+        .attr('x', d => x(d.letra)) // usando a escala definida acima
+        .attr('width', x.bandwidth()) // largura da barra via escala
+        .attr('y', d => y(d.valor))
+        .attr('height', (d) => alturaVis - y(d.valor)); // de cabeca para baixo
+
+      /*
+       * Os eixos
+       */
+      grafico.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + alturaVis + ")")
+        .call(d3.axisBottom(x)); // magica do d3: gera eixo a partir da escala
+
+      grafico.append('g')
+        .attr("class", "y axis")
+        .attr('transform', 'translate(0,0)')
+        .call(d3.axisLeft(y)) // gera eixo a partir da escala
+
+      grafico.append("text")
+        .attr("transform", "translate(-36," + (alturaVis + margin.top) / 2 + ") rotate(-90)")
+        .text("Frequencia");
     }
 
-    d3.tsv('dados/alphabet.tsv', function(dados) {
+    d3.tsv('dados/alphabet.tsv', function (dados) {
       console.log("provavelmente acontece depois")
       desenhaBarras(dados);
     });
@@ -47,11 +109,11 @@
     console.log("provavelmente acontece primeiro") // me apague quando entender.
 
     /*
-    * Assim como a função d3.tsv, existe a d3.csv e a d3.json
-    * Em todas, o primeiro parâmetro é uma URL e o segundo a função que
-    * será executada quando o dado for obtido.
-    * >>>>> A chamada ao d3.tsv é assíncrona <<<<<<
-    */
+     * Assim como a função d3.tsv, existe a d3.csv e a d3.json
+     * Em todas, o primeiro parâmetro é uma URL e o segundo a função que
+     * será executada quando o dado for obtido.
+     * >>>>> A chamada ao d3.tsv é assíncrona <<<<<<
+     */
   </script>
 </body>
 
